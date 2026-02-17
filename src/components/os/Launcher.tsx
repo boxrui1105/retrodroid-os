@@ -18,7 +18,7 @@ export const Launcher: React.FC = () => {
   };
   return (
     <div className="p-6 h-full w-full overflow-y-auto">
-      <motion.div 
+      <motion.div
         variants={container}
         initial="hidden"
         animate="show"
@@ -35,7 +35,7 @@ export const Launcher: React.FC = () => {
               onClick={() => setActiveApp(app.id)}
               className="flex flex-col items-center gap-2 group"
             >
-              <div className="w-14 h-14 bg-black border-2 border-[#00ff41] flex items-center justify-center shadow-[4px_4px_0px_#00ff41] group-hover:shadow-[0_0_15px_#00ff41] group-hover:bg-[#00ff41]/10 transition-all">
+              <div className="w-14 h-14 bg-black border-2 border-current flex items-center justify-center shadow-[4px_4px_0px_currentColor] group-hover:shadow-[0_0_15px_currentColor] group-hover:bg-current/10 transition-all">
                 <Icon size={28} className="group-hover:text-[#ff00ff]" />
               </div>
               <span className="text-[10px] font-bold text-center tracking-tighter truncate w-full uppercase">

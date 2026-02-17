@@ -1,53 +1,43 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useOSStore } from '@/store/os-store';
-import { X, Trash2, History, ChevronRight } from 'lucide-react';
+import { X, Trash2 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
-import { cn } from '@/lib/utils';
 export const RecentsScreen: React.FC = () => {
   const recentApps = useOSStore((s) => s.recentApps);
   const installedApps = useOSStore((s) => s.installedApps);
   const setActiveApp = useOSStore((s) => s.setActiveApp);
   const setRecentsOpen = useOSStore((s) => s.setRecentsOpen);
   const clearRecents = useOSStore((s) => s.clearRecents);
-  const t = useOSStore((s) => s.t);
-  const isDarkMode = useOSStore((s) => s.settings.isDarkMode);
-  const language = useOSStore((s) => s.settings.language);
-  const accentColor = useOSStore((s) => s.settings.accentColor);
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className={cn(
-        "absolute inset-0 z-[60] flex flex-col p-6 backdrop-blur-xl",
-        isDarkMode ? "bg-black/80" : "bg-white/70"
-      )}
+      initial={{ opacity: 0, y: 100 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 100 }}
+      className="absolute inset-0 bg-black/90 backdrop-blur-md z-[60] flex flex-col p-6"
     >
-      <div className="flex justify-between items-center mb-10 mt-4">
-        <h2 className="text-xl font-bold tracking-tight">{t('nav.recents')}</h2>
-        <div className="flex gap-2">
-          <button
+      <div className="flex justify-between items-center mb-8 border-b border-white/10 pb-4">
+        <h2 className="text-xl font-black tracking-widest uppercase">Recents_Task_Manager</h2>
+        <div className="flex gap-4">
+          <button 
             onClick={clearRecents}
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 text-red-500 text-xs font-bold hover:bg-red-500/20 transition-all"
+            className="p-2 hover:bg-red-500/20 text-red-500 border border-red-500/30 transition-all flex items-center gap-2 text-[10px]"
           >
-            <Trash2 size={14} /> {t('nav.clear')}
+            <Trash2 size={14} /> CLEAR_ALL
           </button>
-          <button
+          <button 
             onClick={() => setRecentsOpen(false)}
-            className="p-2 rounded-full hover:bg-zinc-500/10 transition-colors"
+            className="p-2 hover:bg-white/10 border border-white/30"
           >
-            <X size={24} />
+            <X size={20} />
           </button>
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto space-y-4 pb-24 px-1">
+      <div className="flex-1 overflow-y-auto space-y-6 pb-20">
         {recentApps.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center opacity-30 space-y-4">
-            <div className="w-20 h-20 rounded-full bg-zinc-500/20 flex items-center justify-center">
-              <History size={40} />
-            </div>
-            <p className="text-sm font-bold uppercase tracking-widest">{t('nav.empty')}</p>
+          <div className="h-full flex flex-col items-center justify-center opacity-20">
+            <LucideIcons.History size={64} className="mb-4" />
+            <p className="text-sm font-bold uppercase tracking-[0.2em]">No Recent Activity</p>
           </div>
         ) : (
           recentApps.map((appId, index) => {
@@ -57,26 +47,22 @@ export const RecentsScreen: React.FC = () => {
             return (
               <motion.button
                 key={`${appId}-${index}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
                 onClick={() => setActiveApp(appId)}
-                className={cn(
-                  "w-full group relative overflow-hidden rounded-[28px] p-5 flex items-center gap-6 transition-all shadow-sm border",
-                  isDarkMode ? "bg-zinc-900 border-zinc-800 hover:bg-zinc-800" : "bg-white border-zinc-200 hover:bg-zinc-50"
-                )}
+                className="w-full group relative overflow-hidden border border-white/20 bg-white/5 p-4 flex items-center gap-6 hover:bg-white/10 transition-all"
               >
-                <div 
-                  className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-inner"
-                  style={{ backgroundColor: `${accentColor}15`, color: accentColor }}
-                >
+                <div className="w-16 h-16 border-2 border-current flex items-center justify-center bg-black">
                   <Icon size={32} />
                 </div>
-                <div className="text-left flex-1">
-                  <p className="text-lg font-bold">{t(app.nameKey)}</p>
-                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-tight">System Process #{1000 + index * 12}</p>
+                <div className="text-left">
+                  <p className="text-lg font-bold uppercase tracking-tighter">{app.name}</p>
+                  <p className="text-[10px] opacity-50 uppercase">Process ID: {Math.floor(Math.random() * 9999)}</p>
                 </div>
-                <ChevronRight size={20} className="text-muted-foreground opacity-40 group-hover:opacity-100 transition-opacity" />
+                <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                  <LucideIcons.ChevronRight size={24} />
+                </div>
               </motion.button>
             );
           })
