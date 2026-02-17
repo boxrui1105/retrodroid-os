@@ -1,45 +1,28 @@
 import React from 'react';
+import { ChevronLeft, Circle, Square } from 'lucide-react';
 import { useOSStore } from '@/store/os-store';
 import { cn } from '@/lib/utils';
 export const NavigationBar: React.FC = () => {
   const setActiveApp = useOSStore((s) => s.setActiveApp);
-  const setRecentsOpen = useOSStore((s) => s.setRecentsOpen);
   const activeAppId = useOSStore((s) => s.activeAppId);
-  const isRecentsOpen = useOSStore((s) => s.isRecentsOpen);
   return (
-    <div className="h-12 bg-transparent flex items-center justify-around z-50 px-10">
-      {/* Back Button - Caret left */}
-      <button
-        onClick={() => {
-          if (isRecentsOpen) setRecentsOpen(false);
-          else if (activeAppId) setActiveApp(null);
-        }}
-        className="w-10 h-10 flex items-center justify-center rounded-full active:bg-foreground/10 transition-colors"
+    <div className="h-14 bg-black/80 border-t border-[#00ff41]/30 flex items-center justify-around z-50">
+      <button 
+        onClick={() => activeAppId && setActiveApp(null)}
+        className="p-3 hover:bg-[#00ff41]/10 active:scale-90 transition-all rounded-full group"
       >
-        <div className="w-3 h-3 border-l-2 border-b-2 border-foreground rotate-45 ml-1" />
+        <ChevronLeft className="group-hover:text-[#ff00ff]" size={24} />
       </button>
-      {/* Home Button - Circle */}
-      <button
-        onClick={() => {
-          setActiveApp(null);
-          setRecentsOpen(false);
-        }}
-        className="w-10 h-10 flex items-center justify-center rounded-full active:bg-foreground/10 transition-colors"
+      <button 
+        onClick={() => setActiveApp(null)}
+        className="p-3 hover:bg-[#00ff41]/10 active:scale-90 transition-all rounded-full group"
       >
-        <div className={cn(
-          "w-3.5 h-3.5 rounded-full border-2 border-foreground transition-all",
-          !activeAppId && !isRecentsOpen && "bg-foreground"
-        )} />
+        <Circle className={cn("group-hover:text-[#ff00ff]", !activeAppId && "fill-[#00ff41]")} size={20} />
       </button>
-      {/* Recents Button - Square */}
-      <button
-        onClick={() => setRecentsOpen(!isRecentsOpen)}
-        className="w-10 h-10 flex items-center justify-center rounded-full active:bg-foreground/10 transition-colors"
+      <button 
+        className="p-3 hover:bg-[#00ff41]/10 active:scale-90 transition-all rounded-full group"
       >
-        <div className={cn(
-          "w-3.5 h-3.5 rounded-sm border-2 border-foreground transition-all",
-          isRecentsOpen && "bg-foreground"
-        )} />
+        <Square className="group-hover:text-[#ff00ff]" size={18} />
       </button>
     </div>
   );

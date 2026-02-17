@@ -6,38 +6,25 @@ import { NavigationBar } from './NavigationBar';
 import { Launcher } from './Launcher';
 import { AppWindow } from './AppWindow';
 import { BootSequence } from './BootSequence';
-import { LockScreen } from './LockScreen';
-import { RecentsScreen } from './RecentsScreen';
-import { cn } from '@/lib/utils';
 export const SystemShell: React.FC = () => {
   const isBooting = useOSStore((s) => s.isBooting);
   const isLocked = useOSStore((s) => s.isLocked);
-  const isRecentsOpen = useOSStore((s) => s.isRecentsOpen);
   const activeAppId = useOSStore((s) => s.activeAppId);
   const updateTime = useOSStore((s) => s.updateTime);
-  const initializeOS = useOSStore((s) => s.initializeOS);
-  const accentColor = useOSStore((s) => s.settings.accentColor);
-  const isDarkMode = useOSStore((s) => s.settings.isDarkMode);
   useEffect(() => {
-    initializeOS();
     const timer = setInterval(() => updateTime(), 1000);
     return () => clearInterval(timer);
-  }, [updateTime, initializeOS]);
+  }, [updateTime]);
   return (
-    <div
-      className={cn(
-        "relative h-[100dvh] w-screen overflow-hidden flex flex-col font-sans transition-colors duration-500",
-        isDarkMode ? "dark bg-[#0d0d0d]" : "bg-[#f8f9fa]"
-      )}
-      style={{ '--android-primary': accentColor, '--primary': accentColor } as React.CSSProperties}
-    >
+    <div className="relative h-screen w-screen bg-[#0d0d0d] text-[#00ff41] overflow-hidden flex flex-col font-mono selection:bg-[#00ff41] selection:text-black">
+      {/* CRT Effects */}
+      <div className="crt-overlay" />
+      <div className="scanline" />
       <AnimatePresence mode="wait">
         {isBooting ? (
           <BootSequence key="boot" />
-        ) : isLocked ? (
-          <LockScreen key="lock" />
         ) : (
-          <motion.div
+          <motion.div 
             key="os-body"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -49,14 +36,13 @@ export const SystemShell: React.FC = () => {
               <AnimatePresence>
                 {activeAppId && <AppWindow key={activeAppId} />}
               </AnimatePresence>
-              <AnimatePresence>
-                {isRecentsOpen && <RecentsScreen key="recents" />}
-              </AnimatePresence>
             </main>
             <NavigationBar />
           </motion.div>
         )}
       </AnimatePresence>
+      {/* Grid Overlay */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,65,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,65,0.05)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none" />
     </div>
   );
 };
