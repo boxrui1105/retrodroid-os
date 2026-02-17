@@ -1,103 +1,79 @@
 import React from 'react';
 import { useOSStore } from '@/store/os-store';
+import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
-import { Monitor, Palette, Globe, Info, Check } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { cn } from '@/lib/utils';
+import { Palette, Monitor, Cpu, Info } from 'lucide-react';
 export const SettingsApp: React.FC = () => {
   const settings = useOSStore((s) => s.settings);
   const updateSettings = useOSStore((s) => s.updateSettings);
-  const t = useOSStore((s) => s.t);
-  const currentLanguage = useOSStore((s) => s.settings.language);
-  const currentAccent = useOSStore((s) => s.settings.accentColor);
-  const colors = [
-    { name: 'Pancake Orange', value: '#f97316' },
-    { name: 'Blue', value: '#1a73e8' },
-    { name: 'Green', value: '#34a853' },
-    { name: 'Red', value: '#ea4335' },
-    { name: 'Purple', value: '#a855f7' },
-  ];
   return (
-    <div className="h-full bg-zinc-50 dark:bg-zinc-950 p-6 space-y-6 overflow-y-auto pb-12">
-      <section className="space-y-3">
-        <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-          <Monitor size={14} /> {t('settings.visual')}
+    <div className="h-full bg-black/40 p-6 space-y-8 overflow-y-auto font-mono">
+      <div className="space-y-6">
+        <h2 className="flex items-center gap-2 text-xs font-black tracking-[0.3em] uppercase opacity-50 border-b border-[#00ff41]/20 pb-2">
+          <Monitor size={14} /> Visual_Output
         </h2>
-        <Card className="p-4 flex items-center justify-between border-none shadow-sm bg-white dark:bg-zinc-900 rounded-2xl">
-          <div className="space-y-0.5">
-            <span className="text-sm font-medium block">{t('settings.darkmode')}</span>
-            <span className="text-xs text-muted-foreground">Adjust system appearance</span>
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-bold">GLITCH_INTENSITY</span>
+            <span className="retro-text-pink text-xs">{settings.glitchIntensity}</span>
           </div>
-          <Switch
-            checked={settings.isDarkMode}
-            onCheckedChange={(checked) => updateSettings({ isDarkMode: checked })}
+          <Slider
+            value={[settings.glitchIntensity]}
+            onValueChange={([v]) => updateSettings({ glitchIntensity: v })}
+            max={10}
+            step={1}
+            className="w-full"
           />
-        </Card>
-      </section>
-      <section className="space-y-3">
-        <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-          <Globe size={14} /> {t('settings.language')}
-        </h2>
-        <Card className="p-4 border-none shadow-sm bg-white dark:bg-zinc-900 rounded-2xl">
-          <ToggleGroup
-            type="single"
-            value={currentLanguage}
-            onValueChange={(val) => val && updateSettings({ language: val as 'en' | 'zh' })}
-            className="justify-start gap-4"
-          >
-            <ToggleGroupItem
-              value="en"
-              className={cn(
-                "px-6 rounded-full border transition-all",
-                currentLanguage === 'en' && "bg-primary text-primary-foreground border-primary"
-              )}
-            >
-              English
-            </ToggleGroupItem>
-            <ToggleGroupItem
-              value="zh"
-              className={cn(
-                "px-6 rounded-full border transition-all",
-                currentLanguage === 'zh' && "bg-primary text-primary-foreground border-primary"
-              )}
-            >
-              中文
-            </ToggleGroupItem>
-          </ToggleGroup>
-        </Card>
-      </section>
-      <section className="space-y-3">
-        <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-          <Palette size={14} /> {t('settings.accent')}
-        </h2>
-        <Card className="p-4 border-none shadow-sm bg-white dark:bg-zinc-900 rounded-2xl">
-          <div className="flex flex-wrap gap-4">
-            {colors.map((color) => (
-              <button
-                key={color.value}
-                onClick={() => updateSettings({ accentColor: color.value })}
-                className={cn(
-                  "w-12 h-12 rounded-full transition-all flex items-center justify-center shadow-inner",
-                  currentAccent === color.value ? "ring-2 ring-offset-2 ring-primary scale-110" : "hover:scale-105"
-                )}
-                style={{ backgroundColor: color.value }}
-              >
-                {currentAccent === color.value && <Check size={20} className="text-white" />}
-              </button>
-            ))}
+        </div>
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-bold">SCANLINE_STRENGTH</span>
+            <span className="retro-text-pink text-xs">{Math.round(settings.scanlineIntensity * 100)}%</span>
           </div>
-        </Card>
-      </section>
-      <Card className="p-4 border-none shadow-sm bg-orange-50 dark:bg-orange-900/20 rounded-2xl flex items-center gap-4">
-        <div className="p-2 bg-orange-100 dark:bg-orange-800 rounded-full text-orange-600 dark:text-orange-300">
-          <Info size={20} />
+          <Slider
+            value={[settings.scanlineIntensity * 100]}
+            onValueChange={([v]) => updateSettings({ scanlineIntensity: v / 100 })}
+            max={100}
+            step={1}
+          />
         </div>
-        <div className="space-y-0.5">
-          <span className="text-sm font-bold block">{t('settings.info')}</span>
-          <span className="text-xs text-muted-foreground">Pancake OS 11 (Sweet Edition)</span>
+        <div className="flex items-center justify-between p-4 border border-[#00ff41]/20 bg-[#00ff41]/5">
+          <div className="space-y-0.5">
+            <span className="text-sm font-bold block">CRT_FLICKER</span>
+            <span className="text-[10px] opacity-50">Simulate analog display instability</span>
+          </div>
+          <Switch 
+            checked={settings.crtFlicker}
+            onCheckedChange={(checked) => updateSettings({ crtFlicker: checked })}
+          />
         </div>
-      </Card>
+      </div>
+      <div className="space-y-6">
+        <h2 className="flex items-center gap-2 text-xs font-black tracking-[0.3em] uppercase opacity-50 border-b border-[#00ff41]/20 pb-2">
+          <Palette size={14} /> Appearance
+        </h2>
+        <div className="flex gap-4">
+          {['green', 'pink', 'cyan'].map((color) => (
+            <button
+              key={color}
+              onClick={() => updateSettings({ accentColor: color as any })}
+              className={`w-12 h-12 border-2 transition-all ${
+                settings.accentColor === color ? 'border-white scale-110' : 'border-transparent'
+              }`}
+              style={{ backgroundColor: color === 'green' ? '#00ff41' : color === 'pink' ? '#ff00ff' : '#00ffff' }}
+            />
+          ))}
+        </div>
+      </div>
+      <div className="p-4 bg-white/5 border-l-2 border-[#ff00ff] text-[10px] space-y-2">
+        <div className="flex items-center gap-2 opacity-60">
+          <Info size={12} />
+          <span className="font-bold">SYSTEM_SPECS</span>
+        </div>
+        <p>OS_VERSION: 1.0.42-STABLE</p>
+        <p>BUILD_SIG: x86_64-neon-droid</p>
+        <p>STORAGE_AVAIL: 1.2 PB / 4 PB</p>
+      </div>
     </div>
   );
 };
