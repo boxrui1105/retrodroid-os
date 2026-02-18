@@ -51,14 +51,14 @@ interface OSState {
 }
 const TRANSLATIONS: Record<string, Record<string, string>> = {
   en: {
-    'app.hello': 'About Phone',
+    'app.hello': 'About Pancake',
     'app.terminal': 'Terminal',
     'app.notes': 'Notes',
     'app.browser': 'Browser',
     'app.settings': 'Settings',
-    'status.carrier': 'Android',
+    'status.carrier': 'Pancake',
     'lock.swipe': 'Swipe to unlock',
-    'nav.recents': 'Recents Task Manager',
+    'nav.recents': 'Pancake Task Manager',
     'nav.clear': 'Clear All',
     'nav.empty': 'No Recent Activity',
     'settings.visual': 'Display',
@@ -73,39 +73,39 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     'browser.home': 'Home',
     'browser.search': 'Search or type URL',
     'device.model': 'Model',
-    'device.version': 'Android Version',
+    'device.version': 'Pancake Version',
     'device.processor': 'Processor',
     'device.ram': 'Memory',
     'device.storage': 'Storage',
     'device.sim': 'Simulation Mode'
   },
   zh: {
-    'app.hello': '关于手机',
+    'app.hello': '关于煎饼',
     'app.terminal': '终端',
     'app.notes': '便签',
     'app.browser': '浏览器',
     'app.settings': '设置',
-    'status.carrier': '安卓系统',
-    'lock.swipe': '上滑���锁',
-    'nav.recents': '多任务管理',
-    'nav.clear': '全部���除',
-    'nav.empty': '无最近活动',
+    'status.carrier': '煎饼系统',
+    'lock.swipe': '上滑解锁',
+    'nav.recents': '多任务���理',
+    'nav.clear': '全部清除',
+    'nav.empty': '无最���活动',
     'settings.visual': '显示设置',
     'settings.darkmode': '深色模式',
     'settings.language': '系统语言',
-    'settings.accent': '���调色',
-    'settings.info': '设备信息',
+    'settings.accent': '强调色',
+    'settings.info': '设���信息',
     'notes.sidebar': '全部便签',
     'notes.new': '新建便签',
-    'notes.empty': '未选���便签',
-    'notes.placeholder': '开始输入便签内��...',
+    'notes.empty': '未选择便签',
+    'notes.placeholder': '开始���入便签内容...',
     'browser.home': '主页',
     'browser.search': '搜索或输入网址',
     'device.model': '型号',
-    'device.version': '安卓版本',
+    'device.version': '煎饼版本',
     'device.processor': '处理器',
     'device.ram': '内存',
-    'device.storage': '存储空间',
+    'device.storage': '���储空间',
     'device.sim': '模拟模式'
   }
 };
@@ -139,7 +139,7 @@ export const useOSStore = create<OSState>((set, get) => ({
   isRecentsOpen: false,
   systemTime: new Date(),
   recentApps: [],
-  terminalHistory: ['Welcome to Android Shell v1.5', 'Type "help" for a list of commands.'],
+  terminalHistory: ['Welcome to Pancake Shell v1.0', 'Type "help" for a list of commands.'],
   installedApps: [
     { id: 'hello', nameKey: 'app.hello', icon: 'Info', component: 'HelloApp' },
     { id: 'terminal', nameKey: 'app.terminal', icon: 'Terminal', component: 'TerminalApp' },
@@ -148,7 +148,7 @@ export const useOSStore = create<OSState>((set, get) => ({
     { id: 'settings', nameKey: 'app.settings', icon: 'Settings', component: 'SettingsApp' },
   ],
   notes: [
-    { id: '1', title: 'System Note', content: 'Welcome to Android Material OS.', updatedAt: Date.now() }
+    { id: '1', title: 'System Note', content: 'Welcome to Pancake Mobile OS 11.', updatedAt: Date.now() }
   ],
   settings: {
     isDarkMode: false,
@@ -212,7 +212,7 @@ export const useOSStore = create<OSState>((set, get) => ({
   },
   updateNote: (id, updates) => {
     set((state) => {
-      const updatedNotes = state.notes.map(n => 
+      const updatedNotes = state.notes.map(n =>
         n.id === id ? { ...n, ...updates, updatedAt: Date.now() } : n
       );
       syncNotes(updatedNotes);

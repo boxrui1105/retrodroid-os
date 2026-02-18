@@ -12,10 +12,10 @@ export const SettingsApp: React.FC = () => {
   const currentLanguage = useOSStore((s) => s.settings.language);
   const currentAccent = useOSStore((s) => s.settings.accentColor);
   const colors = [
+    { name: 'Pancake Orange', value: '#f97316' },
     { name: 'Blue', value: '#1a73e8' },
     { name: 'Green', value: '#34a853' },
     { name: 'Red', value: '#ea4335' },
-    { name: 'Yellow', value: '#fbbc05' },
     { name: 'Purple', value: '#a855f7' },
   ];
   return (
@@ -46,8 +46,8 @@ export const SettingsApp: React.FC = () => {
             onValueChange={(val) => val && updateSettings({ language: val as 'en' | 'zh' })}
             className="justify-start gap-4"
           >
-            <ToggleGroupItem 
-              value="en" 
+            <ToggleGroupItem
+              value="en"
               className={cn(
                 "px-6 rounded-full border transition-all",
                 currentLanguage === 'en' && "bg-primary text-primary-foreground border-primary"
@@ -55,8 +55,8 @@ export const SettingsApp: React.FC = () => {
             >
               English
             </ToggleGroupItem>
-            <ToggleGroupItem 
-              value="zh" 
+            <ToggleGroupItem
+              value="zh"
               className={cn(
                 "px-6 rounded-full border transition-all",
                 currentLanguage === 'zh' && "bg-primary text-primary-foreground border-primary"
@@ -89,13 +89,13 @@ export const SettingsApp: React.FC = () => {
           </div>
         </Card>
       </section>
-      <Card className="p-4 border-none shadow-sm bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center gap-4">
-        <div className="p-2 bg-blue-100 dark:bg-blue-800 rounded-full text-blue-600 dark:text-blue-300">
+      <Card className="p-4 border-none shadow-sm bg-orange-50 dark:bg-orange-900/20 rounded-2xl flex items-center gap-4">
+        <div className="p-2 bg-orange-100 dark:bg-orange-800 rounded-full text-orange-600 dark:text-orange-300">
           <Info size={20} />
         </div>
         <div className="space-y-0.5">
           <span className="text-sm font-bold block">{t('settings.info')}</span>
-          <span className="text-xs text-muted-foreground">Android 15 (Material Design Edition)</span>
+          <span className="text-xs text-muted-foreground">Pancake OS 11 (Sweet Edition)</span>
         </div>
       </Card>
     </div>

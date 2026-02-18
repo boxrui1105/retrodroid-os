@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useOSStore } from '@/store/os-store';
-import { cn } from '@/lib/utils';
 export const TerminalApp: React.FC = () => {
   const history = useOSStore((s) => s.terminalHistory);
   const addLine = useOSStore((s) => s.addTerminalLine);
   const clearHistory = useOSStore((s) => s.clearTerminal);
   const accentColor = useOSStore((s) => s.settings.accentColor);
-  const language = useOSStore((s) => s.settings.language);
   const [input, setInput] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -16,19 +14,19 @@ export const TerminalApp: React.FC = () => {
   }, [history]);
   const processCommand = (cmd: string) => {
     const cleanCmd = cmd.trim().toLowerCase();
-    addLine(`user@android:~$ ${cmd}`);
+    addLine(`user@pancake:~$ ${cmd}`);
     switch (cleanCmd) {
       case 'help':
-        addLine('Available commands: help, ls, whoami, uptime, clear, echo [text]');
+        addLine('Pancake Shell v1.0. Available commands: help, ls, whoami, uptime, clear, echo [text]');
         break;
       case 'ls':
-        addLine('bin/  data/  etc/  mnt/  proc/  sys/  system/  vendor/');
+        addLine('apps/  cache/  data/  etc/  pancake/  sys/  var/');
         break;
       case 'whoami':
-        addLine('guest_user_7741');
+        addLine('pancake_guest_11');
         break;
       case 'uptime':
-        addLine('up 2 hours, 14 minutes');
+        addLine('up 42 minutes, Pancake Engine running stable');
         break;
       case 'clear':
         clearHistory();
@@ -37,7 +35,7 @@ export const TerminalApp: React.FC = () => {
         if (cleanCmd.startsWith('echo ')) {
           addLine(cmd.slice(5));
         } else if (cleanCmd !== '') {
-          addLine(`/system/bin/sh: ${cleanCmd}: not found`);
+          addLine(`/pancake/bin/sh: ${cleanCmd}: command not found`);
         }
     }
   };
@@ -57,7 +55,7 @@ export const TerminalApp: React.FC = () => {
         ))}
       </div>
       <form onSubmit={handleSubmit} className="mt-4 flex gap-2 items-center border-t border-zinc-800 pt-3">
-        <span style={{ color: accentColor }} className="font-bold whitespace-nowrap">user@android:~$</span>
+        <span style={{ color: accentColor }} className="font-bold whitespace-nowrap">user@pancake:~$</span>
         <input
           autoFocus
           value={input}

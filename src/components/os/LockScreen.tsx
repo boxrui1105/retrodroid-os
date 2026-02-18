@@ -6,7 +6,6 @@ import { useOSStore } from '@/store/os-store';
 export const LockScreen: React.FC = () => {
   const systemTime = useOSStore((s) => s.systemTime);
   const setLocked = useOSStore((s) => s.setLocked);
-  const language = useOSStore((s) => s.settings.language);
   const t = useOSStore((s) => s.t);
   const [isUnlocking, setIsUnlocking] = useState(false);
   const y = useMotionValue(0);
@@ -25,7 +24,7 @@ export const LockScreen: React.FC = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, scale: 1.1 }}
-      className="absolute inset-0 z-[100] bg-gradient-to-b from-blue-50 to-white flex flex-col items-center justify-between py-24 px-10 overflow-hidden"
+      className="absolute inset-0 z-[100] bg-gradient-to-b from-orange-50 to-white flex flex-col items-center justify-between py-24 px-10 overflow-hidden"
     >
       <motion.div style={{ opacity, scale }} className="text-center z-10 flex flex-col items-center">
         <h1 className="text-8xl font-medium tracking-tight text-foreground/90 tabular-nums">
@@ -37,12 +36,12 @@ export const LockScreen: React.FC = () => {
       </motion.div>
       <motion.div style={{ opacity }} className="w-full max-w-sm space-y-4 z-10">
         <div className="p-5 bg-white rounded-[24px] shadow-sm border border-black/5 flex gap-4 items-center">
-          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-android-blue">
+          <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
             <Bell size={20} />
           </div>
           <div className="flex-1">
-            <p className="text-xs font-bold text-foreground/40">SYSTEM</p>
-            <p className="text-sm font-medium text-foreground/80 leading-snug">Android OS is up to date.</p>
+            <p className="text-xs font-bold text-foreground/40">PANCAKE OS</p>
+            <p className="text-sm font-medium text-foreground/80 leading-snug">Pancake OS is up to date.</p>
           </div>
         </div>
       </motion.div>
