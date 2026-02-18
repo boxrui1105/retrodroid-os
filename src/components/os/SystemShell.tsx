@@ -8,6 +8,7 @@ import { AppWindow } from './AppWindow';
 import { BootSequence } from './BootSequence';
 import { LockScreen } from './LockScreen';
 import { RecentsScreen } from './RecentsScreen';
+import { cn } from '@/lib/utils';
 export const SystemShell: React.FC = () => {
   const isBooting = useOSStore((s) => s.isBooting);
   const isLocked = useOSStore((s) => s.isLocked);
@@ -16,7 +17,7 @@ export const SystemShell: React.FC = () => {
   const updateTime = useOSStore((s) => s.updateTime);
   const initializeOS = useOSStore((s) => s.initializeOS);
   const accentColor = useOSStore((s) => s.settings.accentColor);
-  const language = useOSStore((s) => s.settings.language);
+  const isDarkMode = useOSStore((s) => s.settings.isDarkMode);
   useEffect(() => {
     initializeOS();
     const timer = setInterval(() => updateTime(), 1000);
@@ -24,7 +25,10 @@ export const SystemShell: React.FC = () => {
   }, [updateTime, initializeOS]);
   return (
     <div
-      className="relative h-[100dvh] w-screen bg-[#f8f9fa] dark:bg-[#0d0d0d] overflow-hidden flex flex-col font-sans transition-colors duration-500"
+      className={cn(
+        "relative h-[100dvh] w-screen overflow-hidden flex flex-col font-sans transition-colors duration-500",
+        isDarkMode ? "dark bg-[#0d0d0d]" : "bg-[#f8f9fa]"
+      )}
       style={{ '--android-primary': accentColor, '--primary': accentColor } as React.CSSProperties}
     >
       <AnimatePresence mode="wait">

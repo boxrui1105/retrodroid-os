@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Search, ChevronLeft, ChevronRight, RotateCcw, Home, Globe, Lock, ShieldCheck } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { useOSStore } from '@/store/os-store';
 const MOCK_PAGES: Record<string, React.ReactNode> = {
   'home': (
     <div className="space-y-12 p-8 text-center bg-white dark:bg-zinc-950 h-full">
@@ -16,10 +17,7 @@ const MOCK_PAGES: Record<string, React.ReactNode> = {
         </h1>
       </div>
       <div className="max-w-xl mx-auto relative group">
-        <input
-          placeholder="Search or type URL"
-          className="w-full h-14 bg-zinc-100 dark:bg-zinc-800 rounded-full px-12 outline-none text-sm focus:ring-2 ring-primary transition-all border-none shadow-sm"
-        />
+        <BrowserSearchInput />
         <Search className="absolute left-4 top-4 text-muted-foreground" size={20} />
       </div>
       <div className="grid grid-cols-4 gap-4 max-w-sm mx-auto">
@@ -53,9 +51,27 @@ const MOCK_PAGES: Record<string, React.ReactNode> = {
     </div>
   )
 };
+function BrowserSearchInput() {
+  const [val, setVal] = useState('');
+  return (
+    <input
+      value={val}
+      onChange={(e) => setVal(e.target.value)}
+      placeholder="Search or type URL"
+      className="w-full h-14 bg-zinc-100 dark:bg-zinc-800 rounded-full px-12 outline-none text-sm focus:ring-2 ring-primary transition-all border-none shadow-sm"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          // This component doesn't have navigate access easily so we handle it via a parent-driven event pattern or just global state if needed
+          // For simplicity in this mock, we'll let the user see the text change.
+        }
+      }}
+    />
+  );
+}
 export const BrowserApp: React.FC = () => {
   const [url, setUrl] = useState('pancake://home');
   const [currentPage, setCurrentPage] = useState('home');
+  const t = useOSStore((s) => s.t);
   const navigate = (to: string) => {
     setCurrentPage(to);
     setUrl(`pancake://${to}`);
@@ -64,24 +80,68 @@ export const BrowserApp: React.FC = () => {
     <div className="h-full flex flex-col bg-zinc-50 dark:bg-zinc-950 overflow-hidden">
       <div className="bg-white dark:bg-zinc-900 border-b dark:border-zinc-800 p-3 flex items-center gap-3 shrink-0">
         <div className="flex gap-1">
-          <button onClick={() => navigate('home')} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full"><ChevronLeft size={20} /></button>
-          <button className="p-2 opacity-30"><ChevronRight size={20} /></button>
+          <button onClick={() => navigate('home')} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors"><ChevronLeft size={20} /></button>
+          <button className="p-2 opacity-30 cursor-not-allowed"><ChevronRight size={20} /></button>
         </div>
-        <div className="flex-1 bg-zinc-100 dark:bg-zinc-800 rounded-full h-10 px-4 flex items-center gap-2 text-sm">
-          <Lock size={14} className="text-green-500" />
-          <span className="text-muted-foreground truncate flex-1">{url}</span>
-          <button onClick={() => navigate(currentPage === 'home' ? 'news' : 'home')}><RotateCcw size={16} className="text-muted-foreground" /></button>
-        </div>
-        <button onClick={() => navigate('home')} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full"><Home size={20} /></button>
+        <form 
+          className="flex-1"
+          onSubmit={(e) => {
+            e.preventDefault();
+            navigate(url.includes('news') ? 'home' : 'news');
+          }}
+        >
+          <div className="bg-zinc-100 dark:bg-zinc-800 rounded-full h-10 px-4 flex items-center gap-2 text-sm">
+            <Lock size={14} className="text-green-500" />
+            <input 
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              className="bg-transparent border-none outline-none text-muted-foreground truncate flex-1 text-xs"
+            />
+            <button type="button" onClick={() => navigate(currentPage === 'home' ? 'news' : 'home')}><RotateCcw size={16} className="text-muted-foreground" /></button>
+          </div>
+        </form>
+        <button onClick={() => navigate('home')} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors"><Home size={20} /></button>
       </div>
       <div className="flex-1 overflow-y-auto">
-        {MOCK_PAGES[currentPage]}
+        {currentPage === 'home' ? (
+           <div className="space-y-12 p-8 text-center bg-white dark:bg-zinc-950 h-full">
+           <div className="pt-12">
+             <h1 className="text-5xl font-black tracking-tighter flex items-center justify-center gap-2">
+               <span className="text-orange-500">P</span>
+               <span className="text-orange-600">a</span>
+               <span className="text-orange-700">n</span>
+               <span className="text-orange-500">c</span>
+               <span className="text-orange-400">a</span>
+               <span className="text-orange-500">k</span>
+               <span className="text-orange-600">e</span>
+             </h1>
+           </div>
+           <div className="max-w-xl mx-auto relative group">
+             <input
+               placeholder={t('browser.search')}
+               className="w-full h-14 bg-zinc-100 dark:bg-zinc-800 rounded-full px-12 outline-none text-sm focus:ring-2 ring-primary transition-all border-none shadow-sm"
+               onKeyDown={(e) => e.key === 'Enter' && navigate('news')}
+             />
+             <Search className="absolute left-4 top-4 text-muted-foreground" size={20} />
+           </div>
+           <div className="grid grid-cols-4 gap-4 max-w-sm mx-auto">
+             {['YouTube', 'Gmail', 'Maps', 'News'].map(site => (
+               <div key={site} className="flex flex-col items-center gap-2 cursor-pointer" onClick={() => navigate('news')}>
+                 <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center hover:bg-zinc-200 dark:hover:bg-zinc-700 shadow-sm transition-colors">
+                   <Globe size={24} className="text-muted-foreground" />
+                 </div>
+                 <span className="text-[11px] font-medium">{site}</span>
+               </div>
+             ))}
+           </div>
+         </div>
+        ) : MOCK_PAGES['news']}
       </div>
-      <div className="h-8 bg-white dark:bg-zinc-900 border-t dark:border-zinc-800 flex items-center px-4 justify-between">
+      <div className="h-8 bg-white dark:bg-zinc-900 border-t dark:border-zinc-800 flex items-center px-4 justify-between shrink-0">
         <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Pancake Browser v11.0</span>
         <div className="flex items-center gap-1">
-          <div className="w-2 h-2 rounded-full bg-green-500" />
-          <span className="text-[9px] text-muted-foreground">Secure Connection</span>
+          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+          <span className="text-[9px] text-muted-foreground">Encrypted Connection</span>
         </div>
       </div>
     </div>

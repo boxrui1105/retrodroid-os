@@ -80,32 +80,32 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     'device.sim': 'Simulation Mode'
   },
   zh: {
-    'app.hello': '关于煎饼',
+    'app.hello': '��于煎饼',
     'app.terminal': '终端',
     'app.notes': '便签',
     'app.browser': '浏览器',
     'app.settings': '设置',
     'status.carrier': '煎饼系统',
-    'lock.swipe': '上滑解锁',
-    'nav.recents': '多任务���理',
-    'nav.clear': '全部清除',
-    'nav.empty': '无最���活动',
-    'settings.visual': '显示设置',
+    'lock.swipe': '上滑解��',
+    'nav.recents': '多任务管理',
+    'nav.clear': '���部清除',
+    'nav.empty': '无最近活动',
+    'settings.visual': '显��设置',
     'settings.darkmode': '深色模式',
     'settings.language': '系统语言',
     'settings.accent': '强调色',
-    'settings.info': '设���信息',
+    'settings.info': '设备信息',
     'notes.sidebar': '全部便签',
     'notes.new': '新建便签',
-    'notes.empty': '未选择便签',
-    'notes.placeholder': '开始���入便签内容...',
+    'notes.empty': '未选��便签',
+    'notes.placeholder': '开始输入便签内容...',
     'browser.home': '主页',
-    'browser.search': '搜索或输入网址',
+    'browser.search': '搜索或输入��址',
     'device.model': '型号',
     'device.version': '煎饼版本',
-    'device.processor': '处理器',
+    'device.processor': '���理器',
     'device.ram': '内存',
-    'device.storage': '���储空间',
+    'device.storage': '存储空间',
     'device.sim': '模拟模式'
   }
 };
@@ -139,7 +139,13 @@ export const useOSStore = create<OSState>((set, get) => ({
   isRecentsOpen: false,
   systemTime: new Date(),
   recentApps: [],
-  terminalHistory: ['Welcome to Pancake Shell v1.0', 'Type "help" for a list of commands.'],
+  terminalHistory: [
+    'Initializing Pancake Kernel v11.0.4...',
+    'Loading system modules [OK]',
+    'Establishing encrypted P-Cloud connection...',
+    'Welcome to Pancake Shell v1.0',
+    'Type "help" for a list of system commands.'
+  ],
   installedApps: [
     { id: 'hello', nameKey: 'app.hello', icon: 'Info', component: 'HelloApp' },
     { id: 'terminal', nameKey: 'app.terminal', icon: 'Terminal', component: 'TerminalApp' },
@@ -148,12 +154,12 @@ export const useOSStore = create<OSState>((set, get) => ({
     { id: 'settings', nameKey: 'app.settings', icon: 'Settings', component: 'SettingsApp' },
   ],
   notes: [
-    { id: '1', title: 'System Note', content: 'Welcome to Pancake Mobile OS 11.', updatedAt: Date.now() }
+    { id: '1', title: 'Welcome', content: 'Welcome to Pancake Mobile OS 11. Your cloud notes will appear here.', updatedAt: Date.now() }
   ],
   settings: {
     isDarkMode: false,
     language: 'en',
-    accentColor: '#1a73e8',
+    accentColor: '#f97316',
   },
   t: (key) => {
     const lang = get().settings.language;
@@ -166,10 +172,11 @@ export const useOSStore = create<OSState>((set, get) => ({
       const json = await res.json();
       if (json.success && json.data) {
         const { settings, notes } = json.data;
-        if (settings) {
+        // Only update if we actually got valid data from the server
+        if (settings && typeof settings === 'object' && Object.keys(settings).length > 0) {
           set((state) => ({ settings: { ...state.settings, ...settings } }));
         }
-        if (notes && Array.isArray(notes)) {
+        if (notes && Array.isArray(notes) && notes.length > 0) {
           set({ notes });
         }
       }
