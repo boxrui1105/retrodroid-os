@@ -1,75 +1,64 @@
 import React, { useState } from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { format } from 'date-fns';
-import { Lock, ChevronRight, Bell } from 'lucide-react';
+import { Bell } from 'lucide-react';
 import { useOSStore } from '@/store/os-store';
 export const LockScreen: React.FC = () => {
   const systemTime = useOSStore((s) => s.systemTime);
   const setLocked = useOSStore((s) => s.setLocked);
+  const t = useOSStore((s) => s.t);
   const [isUnlocking, setIsUnlocking] = useState(false);
-  const x = useMotionValue(0);
-  const opacity = useTransform(x, [0, 200], [1, 0]);
-  const scale = useTransform(x, [0, 200], [1, 0.95]);
+  const y = useMotionValue(0);
+  const opacity = useTransform(y, [0, -200], [1, 0]);
+  const scale = useTransform(y, [0, -200], [1, 1.05]);
   const handleDragEnd = () => {
-    if (x.get() > 150) {
+    if (y.get() < -150) {
       setIsUnlocking(true);
-      setTimeout(() => setLocked(false), 300);
+      setTimeout(() => setLocked(false), 200);
     } else {
-      x.set(0);
+      y.set(0);
     }
   };
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, scale: 1.1, filter: 'blur(10px)' }}
-      className="absolute inset-0 z-[100] bg-black/90 flex flex-col items-center justify-between p-12 overflow-hidden"
+      exit={{ opacity: 0, scale: 1.1 }}
+      className="absolute inset-0 z-[100] bg-gradient-to-b from-blue-50 to-white flex flex-col items-center justify-between py-24 px-10 overflow-hidden"
     >
-      {/* Background Decorative Element */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] border border-[#00ff41]/10 rounded-full animate-pulse pointer-events-none" />
-      {/* Clock Area */}
-      <motion.div style={{ opacity, scale }} className="text-center mt-12 z-10">
-        <h1 className="text-8xl font-black tracking-tighter retro-text-green tabular-nums">
+      <motion.div style={{ opacity, scale }} className="text-center z-10 flex flex-col items-center">
+        <h1 className="text-8xl font-medium tracking-tight text-foreground/90 tabular-nums">
           {format(systemTime, 'HH:mm')}
         </h1>
-        <p className="text-xl opacity-50 font-bold uppercase tracking-[0.3em]">
-          {format(systemTime, 'eeee, MMM do')}
+        <p className="text-lg font-medium text-foreground/50 mt-2">
+          {format(systemTime, 'eeee, MMMM do')}
         </p>
       </motion.div>
-      {/* Notifications */}
-      <motion.div style={{ opacity }} className="w-full max-w-sm space-y-3 z-10">
-        <div className="p-4 border border-[#00ff41]/20 bg-[#00ff41]/5 flex gap-4 items-start">
-          <Bell size={18} className="retro-text-pink shrink-0 mt-1" />
-          <div>
-            <p className="text-[10px] font-bold retro-text-pink">SYSTEM_KERNEL</p>
-            <p className="text-xs">NEON_DROID_V1.0 is ready for uplink. Initialize secure handshake.</p>
+      <motion.div style={{ opacity }} className="w-full max-w-sm space-y-4 z-10">
+        <div className="p-5 bg-white rounded-[24px] shadow-sm border border-black/5 flex gap-4 items-center">
+          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-android-blue">
+            <Bell size={20} />
           </div>
-        </div>
-        <div className="p-4 border border-[#00ff41]/20 bg-[#00ff41]/5 flex gap-4 items-start opacity-60">
-          <Lock size={18} className="retro-text-green shrink-0 mt-1" />
-          <div>
-            <p className="text-[10px] font-bold retro-text-green">SECURITY_MODULE</p>
-            <p className="text-xs">Bio-scan complete. Identify: USER_GUEST_01</p>
+          <div className="flex-1">
+            <p className="text-xs font-bold text-foreground/40">SYSTEM</p>
+            <p className="text-sm font-medium text-foreground/80 leading-snug">Android OS is up to date.</p>
           </div>
         </div>
       </motion.div>
-      {/* Slider Area */}
-      <div className="w-full max-w-xs relative h-16 bg-[#00ff41]/5 border border-[#00ff41]/20 rounded-full flex items-center px-2 mb-12">
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <span className="text-[10px] font-bold tracking-[0.2em] opacity-40 uppercase">Slide to unlock</span>
-        </div>
-        <motion.div
-          drag="x"
-          dragConstraints={{ left: 0, right: 240 }}
-          style={{ x }}
-          onDragEnd={handleDragEnd}
-          className="w-12 h-12 bg-[#00ff41] flex items-center justify-center cursor-grab active:cursor-grabbing z-20 shadow-[0_0_15px_#00ff41]"
-        >
-          <ChevronRight className="text-black" />
-        </motion.div>
-      </div>
+      <motion.div
+        drag="y"
+        dragConstraints={{ top: -300, bottom: 0 }}
+        style={{ y }}
+        onDragEnd={handleDragEnd}
+        className="flex flex-col items-center gap-4 cursor-grab active:cursor-grabbing"
+      >
+        <div className="w-12 h-1.5 bg-foreground/10 rounded-full" />
+        <span className="text-xs font-bold text-foreground/30 uppercase tracking-[0.2em]">
+          {t('lock.swipe')}
+        </span>
+      </motion.div>
       {isUnlocking && (
-        <div className="absolute inset-0 bg-white/10 mix-blend-overlay animate-pulse" />
+        <div className="absolute inset-0 bg-white/40 backdrop-blur-sm transition-all" />
       )}
     </motion.div>
   );

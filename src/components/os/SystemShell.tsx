@@ -8,11 +8,6 @@ import { AppWindow } from './AppWindow';
 import { BootSequence } from './BootSequence';
 import { LockScreen } from './LockScreen';
 import { RecentsScreen } from './RecentsScreen';
-const ACCENT_MAP = {
-  green: '#00ff41',
-  pink: '#ff00ff',
-  cyan: '#00ffff'
-};
 export const SystemShell: React.FC = () => {
   const isBooting = useOSStore((s) => s.isBooting);
   const isLocked = useOSStore((s) => s.isLocked);
@@ -20,22 +15,17 @@ export const SystemShell: React.FC = () => {
   const activeAppId = useOSStore((s) => s.activeAppId);
   const updateTime = useOSStore((s) => s.updateTime);
   const initializeOS = useOSStore((s) => s.initializeOS);
-  const glitchIntensity = useOSStore((s) => s.settings.glitchIntensity);
-  const crtFlicker = useOSStore((s) => s.settings.crtFlicker);
   const accentColor = useOSStore((s) => s.settings.accentColor);
   useEffect(() => {
     initializeOS();
     const timer = setInterval(() => updateTime(), 1000);
     return () => clearInterval(timer);
   }, [updateTime, initializeOS]);
-  const activeAccent = ACCENT_MAP[accentColor] || ACCENT_MAP.green;
   return (
-    <div 
-      className="relative h-screen w-screen bg-[#0d0d0d] overflow-hidden flex flex-col font-mono selection:bg-[#00ff41] selection:text-black"
-      style={{ '--accent-primary': activeAccent } as React.CSSProperties}
+    <div
+      className="relative h-screen w-screen bg-[#f8f9fa] dark:bg-[#0d0d0d] overflow-hidden flex flex-col font-sans transition-colors duration-500"
+      style={{ '--android-primary': accentColor } as React.CSSProperties}
     >
-      <div className="crt-overlay" />
-      <div className="scanline" />
       <AnimatePresence mode="wait">
         {isBooting ? (
           <BootSequence key="boot" />
@@ -44,14 +34,9 @@ export const SystemShell: React.FC = () => {
         ) : (
           <motion.div
             key="os-body"
-            initial={{ opacity: 0, scale: 1.1 }}
-            animate={{
-              opacity: 1,
-              scale: 1,
-              filter: `contrast(${1 + glitchIntensity * 0.1}) brightness(${1 + glitchIntensity * 0.05})`,
-              color: activeAccent
-            }}
-            className={`flex-1 flex flex-col relative z-10 ${crtFlicker ? 'flicker' : ''}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex-1 flex flex-col relative z-10"
           >
             <StatusBar />
             <main className="flex-1 relative overflow-hidden">
@@ -67,7 +52,6 @@ export const SystemShell: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,65,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,65,0.05)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none" />
     </div>
   );
 };

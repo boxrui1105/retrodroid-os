@@ -4,22 +4,19 @@ import { Battery, Wifi, SignalHigh } from 'lucide-react';
 import { useOSStore } from '@/store/os-store';
 export const StatusBar: React.FC = () => {
   const systemTime = useOSStore((s) => s.systemTime);
+  const t = useOSStore((s) => s.t);
   return (
-    <div className="h-8 px-4 flex items-center justify-between text-[10px] bg-black/40 border-b border-[#00ff41]/20 backdrop-blur-sm z-50">
+    <div className="h-7 px-5 flex items-center justify-between text-[11px] font-medium bg-transparent z-50">
       <div className="flex items-center gap-3">
-        <span className="retro-text-green font-bold tracking-widest">NEON_DROID_V1.0</span>
-        <div className="flex items-center gap-1 opacity-70">
-          <SignalHigh size={12} />
-          <Wifi size={12} />
-        </div>
+        <span className="text-foreground/80">{format(systemTime, 'HH:mm')}</span>
+        <span className="text-foreground/40 font-bold ml-1 tracking-tight">{t('status.carrier')}</span>
       </div>
-      <div className="flex items-center gap-3">
-        <span className="tabular-nums font-bold">
-          {format(systemTime, 'HH:mm:ss')}
-        </span>
+      <div className="flex items-center gap-2 text-foreground/80">
+        <SignalHigh size={14} strokeWidth={2.5} />
+        <Wifi size={14} strokeWidth={2.5} />
         <div className="flex items-center gap-1">
-          <span className="opacity-70">88%</span>
-          <Battery size={12} className="rotate-90" />
+          <span className="text-[10px]">88%</span>
+          <Battery size={14} className="rotate-0" strokeWidth={2.5} />
         </div>
       </div>
     </div>

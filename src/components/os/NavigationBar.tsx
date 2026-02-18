@@ -1,5 +1,4 @@
 import React from 'react';
-import { ChevronLeft, Circle, Square } from 'lucide-react';
 import { useOSStore } from '@/store/os-store';
 import { cn } from '@/lib/utils';
 export const NavigationBar: React.FC = () => {
@@ -8,30 +7,39 @@ export const NavigationBar: React.FC = () => {
   const activeAppId = useOSStore((s) => s.activeAppId);
   const isRecentsOpen = useOSStore((s) => s.isRecentsOpen);
   return (
-    <div className="h-14 bg-black/80 border-t border-current/30 flex items-center justify-around z-50">
+    <div className="h-12 bg-transparent flex items-center justify-around z-50 px-10">
+      {/* Back Button - Caret left */}
       <button
         onClick={() => {
           if (isRecentsOpen) setRecentsOpen(false);
           else if (activeAppId) setActiveApp(null);
         }}
-        className="p-3 hover:bg-current/10 active:scale-90 transition-all rounded-full group"
+        className="w-10 h-10 flex items-center justify-center rounded-full active:bg-foreground/10 transition-colors"
       >
-        <ChevronLeft className="group-hover:text-[#ff00ff]" size={24} />
+        <div className="w-3 h-3 border-l-2 border-b-2 border-foreground rotate-45 ml-1" />
       </button>
+      {/* Home Button - Circle */}
       <button
         onClick={() => {
           setActiveApp(null);
           setRecentsOpen(false);
         }}
-        className="p-3 hover:bg-current/10 active:scale-90 transition-all rounded-full group"
+        className="w-10 h-10 flex items-center justify-center rounded-full active:bg-foreground/10 transition-colors"
       >
-        <Circle className={cn("group-hover:text-[#ff00ff]", !activeAppId && !isRecentsOpen && "fill-current")} size={20} />
+        <div className={cn(
+          "w-3.5 h-3.5 rounded-full border-2 border-foreground transition-all",
+          !activeAppId && !isRecentsOpen && "bg-foreground"
+        )} />
       </button>
+      {/* Recents Button - Square */}
       <button
         onClick={() => setRecentsOpen(!isRecentsOpen)}
-        className="p-3 hover:bg-current/10 active:scale-90 transition-all rounded-full group"
+        className="w-10 h-10 flex items-center justify-center rounded-full active:bg-foreground/10 transition-colors"
       >
-        <Square className={cn("group-hover:text-[#ff00ff]", isRecentsOpen && "fill-current")} size={18} />
+        <div className={cn(
+          "w-3.5 h-3.5 rounded-sm border-2 border-foreground transition-all",
+          isRecentsOpen && "bg-foreground"
+        )} />
       </button>
     </div>
   );

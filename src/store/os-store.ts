@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 export interface AppConfig {
   id: string;
-  name: string;
+  nameKey: string;
   icon: string;
   component: string;
 }
@@ -12,10 +12,9 @@ export interface Note {
   updatedAt: number;
 }
 export interface SystemSettings {
-  glitchIntensity: number;
-  accentColor: 'green' | 'pink' | 'cyan';
-  scanlineIntensity: number;
-  crtFlicker: boolean;
+  isDarkMode: boolean;
+  language: 'en' | 'zh';
+  accentColor: string;
 }
 interface OSState {
   isBooting: boolean;
@@ -26,7 +25,6 @@ interface OSState {
   systemTime: Date;
   recentApps: string[];
   installedApps: AppConfig[];
-  terminalHistory: string[];
   notes: Note[];
   settings: SystemSettings;
   // Actions
@@ -36,11 +34,11 @@ interface OSState {
   setRecentsOpen: (val: boolean) => void;
   updateTime: () => void;
   clearRecents: () => void;
+  // Language & Translation
+  setLanguage: (lang: 'en' | 'zh') => void;
+  t: (key: string) => string;
   // Persistence Actions
   initializeOS: () => Promise<void>;
-  // Terminal Actions
-  addTerminalLine: (line: string) => void;
-  clearTerminal: () => void;
   // Notes Actions
   addNote: (note: Omit<Note, 'id' | 'updatedAt'>) => void;
   updateNote: (id: string, content: string) => void;
@@ -48,6 +46,32 @@ interface OSState {
   // Settings Actions
   updateSettings: (settings: Partial<SystemSettings>) => void;
 }
+const TRANSLATIONS: Record<string, Record<string, string>> = {
+  en: {
+    'app.hello': 'Hello',
+    'app.terminal': 'Terminal',
+    'app.notes': 'Notes',
+    'app.browser': 'Browser',
+    'app.settings': 'Settings',
+    'status.carrier': 'Android',
+    'lock.swipe': 'Swipe to unlock',
+    'nav.recents': 'Recents Task Manager',
+    'nav.clear': 'Clear All',
+    'nav.empty': 'No Recent Activity'
+  },
+  zh: {
+    'app.hello': '关于手机',
+    'app.terminal': '终端',
+    'app.notes': '便签',
+    'app.browser': '浏览器',
+    'app.settings': '设置',
+    'status.carrier': '安卓系统',
+    'lock.swipe': '上滑���锁',
+    'nav.recents': '多任务管理',
+    'nav.clear': '全部��除',
+    'nav.empty': '无最近活动'
+  }
+};
 const syncSettings = async (settings: SystemSettings) => {
   try {
     await fetch('/api/os/settings', {
@@ -79,26 +103,23 @@ export const useOSStore = create<OSState>((set, get) => ({
   systemTime: new Date(),
   recentApps: [],
   installedApps: [
-    { id: 'hello', name: 'HELLO.EXE', icon: 'Cpu', component: 'HelloApp' },
-    { id: 'terminal', name: 'TERM.SH', icon: 'Terminal', component: 'TerminalApp' },
-    { id: 'notes', name: 'NOTES.TXT', icon: 'FileText', component: 'NotesApp' },
-    { id: 'browser', name: 'NET.EXE', icon: 'Globe', component: 'BrowserApp' },
-    { id: 'settings', name: 'SYS.CONF', icon: 'Settings', component: 'SettingsApp' },
-  ],
-  terminalHistory: [
-    "NEON_DROID_OS [Version 1.0.42]",
-    "(c) 2099 Neon-Dynamic Systems. All rights reserved.",
-    "",
-    "Type 'help' for available commands."
+    { id: 'hello', nameKey: 'app.hello', icon: 'Smartphone', component: 'HelloApp' },
+    { id: 'terminal', nameKey: 'app.terminal', icon: 'Terminal', component: 'TerminalApp' },
+    { id: 'notes', nameKey: 'app.notes', icon: 'FileText', component: 'NotesApp' },
+    { id: 'browser', nameKey: 'app.browser', icon: 'Globe', component: 'BrowserApp' },
+    { id: 'settings', nameKey: 'app.settings', icon: 'Settings', component: 'SettingsApp' },
   ],
   notes: [
-    { id: '1', title: 'TODO', content: '1. Buy synthetic caffeine\n2. Patch neural link\n3. Evade Sector 7 patrols', updatedAt: Date.now() }
+    { id: '1', title: 'System Note', content: 'Welcome to Android Material OS.', updatedAt: Date.now() }
   ],
   settings: {
-    glitchIntensity: 2,
-    accentColor: 'green',
-    scanlineIntensity: 0.5,
-    crtFlicker: true,
+    isDarkMode: false,
+    language: 'en',
+    accentColor: '#1a73e8',
+  },
+  t: (key) => {
+    const lang = get().settings.language;
+    return TRANSLATIONS[lang][key] || key;
   },
   initializeOS: async () => {
     set({ isSyncing: true });
@@ -107,7 +128,7 @@ export const useOSStore = create<OSState>((set, get) => ({
       const json = await res.json();
       if (json.success && json.data) {
         const { settings, notes } = json.data;
-        if (settings) set({ settings });
+        if (settings) set((state) => ({ settings: { ...state.settings, ...settings } }));
         if (notes) set({ notes });
       }
     } catch (e) {
@@ -119,22 +140,19 @@ export const useOSStore = create<OSState>((set, get) => ({
   setBooting: (val) => set({ isBooting: val }),
   setLocked: (val) => set({ isLocked: val }),
   setRecentsOpen: (val) => set({ isRecentsOpen: val }),
+  setLanguage: (lang) => set((state) => ({ settings: { ...state.settings, language: lang } })),
   setActiveApp: (id) => set((state) => {
-    const newRecentApps = id 
+    const newRecentApps = id
       ? [id, ...state.recentApps.filter(appId => appId !== id)].slice(0, 10)
       : state.recentApps;
-    return { 
-      activeAppId: id, 
+    return {
+      activeAppId: id,
       recentApps: newRecentApps,
-      isRecentsOpen: false 
+      isRecentsOpen: false
     };
   }),
   updateTime: () => set({ systemTime: new Date() }),
   clearRecents: () => set({ recentApps: [] }),
-  addTerminalLine: (line) => set((state) => ({
-    terminalHistory: [...state.terminalHistory, line]
-  })),
-  clearTerminal: () => set({ terminalHistory: [] }),
   addNote: (note) => {
     set((state) => {
       const newNote = { id: crypto.randomUUID(), ...note, updatedAt: Date.now() };

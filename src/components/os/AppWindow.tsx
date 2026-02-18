@@ -6,6 +6,7 @@ import { TerminalApp } from '@/components/apps/TerminalApp';
 import { NotesApp } from '@/components/apps/NotesApp';
 import { SettingsApp } from '@/components/apps/SettingsApp';
 import { BrowserApp } from '@/components/apps/BrowserApp';
+import { X } from 'lucide-react';
 const AppRegistry: Record<string, React.FC> = {
   HelloApp: HelloApp,
   TerminalApp: TerminalApp,
@@ -17,34 +18,32 @@ export const AppWindow: React.FC = () => {
   const activeAppId = useOSStore((s) => s.activeAppId);
   const installedApps = useOSStore((s) => s.installedApps);
   const setActiveApp = useOSStore((s) => s.setActiveApp);
+  const t = useOSStore((s) => s.t);
   const appConfig = installedApps.find(a => a.id === activeAppId);
   if (!appConfig) return null;
   const AppComponent = AppRegistry[appConfig.component] || (() => <div className="p-4">Error: Component {appConfig.component} not found.</div>);
   return (
     <motion.div
-      initial={{ scale: 0.5, opacity: 0, y: 50 }}
-      animate={{ scale: 1, opacity: 1, y: 0 }}
-      exit={{ scale: 0.9, opacity: 0, transition: { duration: 0.2 } }}
-      className="absolute inset-0 bg-[#0d0d0d] z-40 flex flex-col"
+      initial={{ y: "100%", opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: "100%", opacity: 0 }}
+      transition={{ type: "spring", damping: 25, stiffness: 200 }}
+      className="absolute inset-0 bg-background z-40 flex flex-col rounded-t-[28px] overflow-hidden shadow-2xl border-t border-black/5"
     >
-      <div className="h-10 px-4 bg-current text-black flex items-center justify-between font-bold text-xs shrink-0">
-        <span className="tracking-widest uppercase truncate max-w-[70%]">{appConfig.name}</span>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setActiveApp(null)}
-            className="w-4 h-4 border-2 border-black flex items-center justify-center hover:bg-black/10"
-          >
-            <div className="w-2 h-[2px] bg-black" />
-          </button>
-          <button
-            onClick={() => setActiveApp(null)}
-            className="w-4 h-4 border-2 border-black flex items-center justify-center bg-black text-current text-[8px]"
-          >
-            X
-          </button>
-        </div>
+      {/* Title Bar / Handle */}
+      <div className="h-14 px-6 flex items-center justify-between shrink-0 bg-transparent">
+        <span className="font-semibold text-foreground/90 tracking-tight text-lg">
+          {t(appConfig.nameKey)}
+        </span>
+        <button
+          onClick={() => setActiveApp(null)}
+          className="w-8 h-8 rounded-full bg-foreground/5 flex items-center justify-center hover:bg-foreground/10 active:scale-90 transition-all"
+        >
+          <X size={18} className="text-foreground/60" strokeWidth={2.5} />
+        </button>
       </div>
-      <div className="flex-1 overflow-auto relative">
+      {/* Content Area */}
+      <div className="flex-1 overflow-auto relative bg-white dark:bg-zinc-950">
         <AppComponent />
       </div>
     </motion.div>
