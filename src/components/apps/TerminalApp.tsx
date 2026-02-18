@@ -13,23 +13,19 @@ export const TerminalApp: React.FC = () => {
   }, [history]);
   const processCommand = (cmd: string) => {
     const cleanCmd = cmd.trim().toLowerCase();
-    addLine(`guest@neon-droid:~$ ${cmd}`);
+    addLine(`user@android:~$ ${cmd}`);
     switch (cleanCmd) {
       case 'help':
-        addLine('Available commands: help, ls, whoami, sys-info, clear, echo [text]');
+        addLine('Available commands: help, ls, whoami, uptime, clear, echo [text]');
         break;
       case 'ls':
-        addLine('DRV_C:  [OS_CORE]  [USER_DATA]  [LOGS]');
-        addLine('DRV_D:  [TEMP]     [DECRYPTED]');
+        addLine('bin/  data/  etc/  mnt/  proc/  sys/  system/  vendor/');
         break;
       case 'whoami':
-        addLine('USER_GUEST_01 (UNREGISTERED)');
-        addLine('Access Level: 0');
+        addLine('guest_user_7741');
         break;
-      case 'sys-info':
-        addLine('NEON_DROID Kernel v1.0.42');
-        addLine('Uptime: 00:42:15');
-        addLine('CPU: NEURAL_CORE X8 @ 4.2GHz');
+      case 'uptime':
+        addLine('up 2 hours, 14 minutes');
         break;
       case 'clear':
         clearHistory();
@@ -38,31 +34,32 @@ export const TerminalApp: React.FC = () => {
         if (cleanCmd.startsWith('echo ')) {
           addLine(cmd.slice(5));
         } else if (cleanCmd !== '') {
-          addLine(`sh: command not found: ${cleanCmd}`);
+          addLine(`/system/bin/sh: ${cleanCmd}: not found`);
         }
     }
   };
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!input.trim()) return;
     processCommand(input);
     setInput('');
   };
   return (
-    <div className="h-full bg-black flex flex-col p-4 font-mono text-sm">
-      <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-1 scrollbar-hide">
+    <div className="h-full bg-zinc-950 flex flex-col p-4 font-mono text-sm text-zinc-300">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-1 scrollbar-thin">
         {history.map((line, i) => (
           <div key={i} className="whitespace-pre-wrap break-all leading-relaxed">
             {line}
           </div>
         ))}
       </div>
-      <form onSubmit={handleSubmit} className="mt-4 flex gap-2 items-center">
-        <span className="retro-text-green font-bold whitespace-nowrap">guest@neon-droid:~$</span>
+      <form onSubmit={handleSubmit} className="mt-4 flex gap-2 items-center border-t border-zinc-800 pt-3">
+        <span className="text-[#34a853] font-bold whitespace-nowrap">user@android:~$</span>
         <input
           autoFocus
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="flex-1 bg-transparent border-none outline-none text-[#00ff41] caret-[#ff00ff]"
+          className="flex-1 bg-transparent border-none outline-none text-zinc-100 caret-primary"
         />
       </form>
     </div>

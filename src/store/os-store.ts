@@ -27,6 +27,7 @@ interface OSState {
   installedApps: AppConfig[];
   notes: Note[];
   settings: SystemSettings;
+  terminalHistory: string[];
   // Actions
   setBooting: (val: boolean) => void;
   setLocked: (val: boolean) => void;
@@ -34,6 +35,8 @@ interface OSState {
   setRecentsOpen: (val: boolean) => void;
   updateTime: () => void;
   clearRecents: () => void;
+  addTerminalLine: (line: string) => void;
+  clearTerminal: () => void;
   // Language & Translation
   setLanguage: (lang: 'en' | 'zh') => void;
   t: (key: string) => string;
@@ -48,7 +51,7 @@ interface OSState {
 }
 const TRANSLATIONS: Record<string, Record<string, string>> = {
   en: {
-    'app.hello': 'Hello',
+    'app.hello': 'About Phone',
     'app.terminal': 'Terminal',
     'app.notes': 'Notes',
     'app.browser': 'Browser',
@@ -57,7 +60,23 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     'lock.swipe': 'Swipe to unlock',
     'nav.recents': 'Recents Task Manager',
     'nav.clear': 'Clear All',
-    'nav.empty': 'No Recent Activity'
+    'nav.empty': 'No Recent Activity',
+    'settings.visual': 'Display',
+    'settings.darkmode': 'Dark Mode',
+    'settings.language': 'System Language',
+    'settings.accent': 'Accent Color',
+    'settings.info': 'Device Information',
+    'notes.sidebar': 'All Notes',
+    'notes.new': 'New Note',
+    'notes.empty': 'No note selected',
+    'browser.home': 'Home',
+    'browser.search': 'Search or type URL',
+    'device.model': 'Model',
+    'device.version': 'Android Version',
+    'device.processor': 'Processor',
+    'device.ram': 'Memory',
+    'device.storage': 'Storage',
+    'device.sim': 'Simulation Mode'
   },
   zh: {
     'app.hello': '关于手机',
@@ -66,10 +85,26 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     'app.browser': '浏览器',
     'app.settings': '设置',
     'status.carrier': '安卓系统',
-    'lock.swipe': '上滑���锁',
+    'lock.swipe': '上��解锁',
     'nav.recents': '多任务管理',
-    'nav.clear': '全部��除',
-    'nav.empty': '无最近活动'
+    'nav.clear': '���部清除',
+    'nav.empty': '无最近活动',
+    'settings.visual': '��示设置',
+    'settings.darkmode': '深色模式',
+    'settings.language': '系统��言',
+    'settings.accent': '强调色',
+    'settings.info': '设备信息',
+    'notes.sidebar': '全部便签',
+    'notes.new': '新建便签',
+    'notes.empty': '未选择便签',
+    'browser.home': '主页',
+    'browser.search': '搜索或输入网址',
+    'device.model': '型号',
+    'device.version': '安卓版本',
+    'device.processor': '处理器',
+    'device.ram': '���存',
+    'device.storage': '存储空间',
+    'device.sim': '模拟模式'
   }
 };
 const syncSettings = async (settings: SystemSettings) => {
@@ -102,8 +137,9 @@ export const useOSStore = create<OSState>((set, get) => ({
   isRecentsOpen: false,
   systemTime: new Date(),
   recentApps: [],
+  terminalHistory: ['Welcome to Android Shell v1.5', 'Type "help" for a list of commands.'],
   installedApps: [
-    { id: 'hello', nameKey: 'app.hello', icon: 'Smartphone', component: 'HelloApp' },
+    { id: 'hello', nameKey: 'app.hello', icon: 'Info', component: 'HelloApp' },
     { id: 'terminal', nameKey: 'app.terminal', icon: 'Terminal', component: 'TerminalApp' },
     { id: 'notes', nameKey: 'app.notes', icon: 'FileText', component: 'NotesApp' },
     { id: 'browser', nameKey: 'app.browser', icon: 'Globe', component: 'BrowserApp' },
@@ -153,6 +189,8 @@ export const useOSStore = create<OSState>((set, get) => ({
   }),
   updateTime: () => set({ systemTime: new Date() }),
   clearRecents: () => set({ recentApps: [] }),
+  addTerminalLine: (line) => set((state) => ({ terminalHistory: [...state.terminalHistory, line] })),
+  clearTerminal: () => set({ terminalHistory: [] }),
   addNote: (note) => {
     set((state) => {
       const newNote = { id: crypto.randomUUID(), ...note, updatedAt: Date.now() };

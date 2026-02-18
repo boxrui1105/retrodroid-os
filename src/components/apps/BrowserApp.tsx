@@ -1,82 +1,92 @@
 import React, { useState } from 'react';
-import { Search, ChevronLeft, ChevronRight, RotateCcw, Home, Globe, ExternalLink } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, RotateCcw, Home, Globe, Lock, ShieldCheck } from 'lucide-react';
+import { useOSStore } from '@/store/os-store';
+import { Card } from '@/components/ui/card';
 const MOCK_PAGES: Record<string, React.ReactNode> = {
   'home': (
-    <div className="space-y-8 p-6 text-center">
-      <div className="inline-block p-4 border-2 border-current mb-4">
-        <Globe size={48} className="mx-auto" />
+    <div className="space-y-12 p-8 text-center bg-white dark:bg-zinc-950 h-full">
+      <div className="pt-12">
+        <h1 className="text-5xl font-black tracking-tighter flex items-center justify-center gap-2">
+          <span className="text-blue-500">G</span>
+          <span className="text-red-500">o</span>
+          <span className="text-yellow-500">o</span>
+          <span className="text-blue-500">g</span>
+          <span className="text-green-500">l</span>
+          <span className="text-red-500">e</span>
+        </h1>
       </div>
-      <h1 className="text-3xl font-black uppercase tracking-[0.2em]">Net_Explorer_v4</h1>
-      <div className="max-w-md mx-auto relative">
-        <input 
-          placeholder="SEARCH THE DEEP_NET..." 
-          className="w-full bg-current/10 border-2 border-current p-3 pl-10 outline-none text-sm font-bold uppercase"
+      <div className="max-w-xl mx-auto relative group">
+        <input
+          placeholder="Search or type URL"
+          className="w-full h-14 bg-zinc-100 dark:bg-zinc-800 rounded-full px-12 outline-none text-sm focus:ring-2 ring-primary transition-all border-none shadow-sm"
         />
-        <Search className="absolute left-3 top-3.5 opacity-50" size={18} />
+        <Search className="absolute left-4 top-4 text-muted-foreground" size={20} />
       </div>
-      <div className="grid grid-cols-2 gap-4 text-[10px] font-bold">
-        {['NEON.NEWS', 'HACK.NET', 'CYBER.WARE', 'DROID.DOCS'].map(site => (
-          <div key={site} className="p-3 border border-current/30 hover:bg-current/10 cursor-pointer uppercase transition-all">
-            {site}
+      <div className="grid grid-cols-4 gap-4 max-w-sm mx-auto">
+        {['YouTube', 'Gmail', 'Maps', 'News'].map(site => (
+          <div key={site} className="flex flex-col items-center gap-2">
+            <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center hover:bg-zinc-200 dark:hover:bg-zinc-700 cursor-pointer shadow-sm transition-colors">
+              <Globe size={24} className="text-muted-foreground" />
+            </div>
+            <span className="text-[11px] font-medium">{site}</span>
           </div>
         ))}
       </div>
     </div>
   ),
-  'neon.news': (
-    <div className="p-6 space-y-6">
-      <h2 className="text-2xl font-black border-b-4 border-current pb-2 italic">NEON_MORNING_POST</h2>
-      <div className="space-y-4">
-        <div className="p-4 bg-current/5 border border-current/20">
-          <p className="text-[10px] opacity-50 mb-1">2099-10-24 // SECTOR 7</p>
-          <h3 className="font-bold text-lg mb-2 uppercase">Neural-Link Outage Hits Core Districts</h3>
-          <p className="text-sm leading-relaxed">Central Hub confirms a major bypass in the neural backbone. Citizens are advised to switch to manual cognitive processing until further notice.</p>
-        </div>
-        <div className="p-4 bg-current/5 border border-current/20">
-          <p className="text-[10px] opacity-50 mb-1">2099-10-23 // UNDERGROUND</p>
-          <h3 className="font-bold text-lg mb-2 uppercase">New Synth-Caffeine Brand Hits the Shelves</h3>
-          <p className="text-sm leading-relaxed">'Glitch-Brew' promises 400% alertness increase with only 12% chance of permanent jitter-syndrome.</p>
-        </div>
+  'news': (
+    <div className="p-6 space-y-6 bg-zinc-50 dark:bg-zinc-950 h-full">
+      <h2 className="text-2xl font-bold tracking-tight border-b-2 border-primary pb-2 flex items-center gap-2">
+        <ShieldCheck className="text-primary" /> Daily News Portal
+      </h2>
+      <div className="grid gap-4">
+        {[1, 2].map(i => (
+          <Card key={i} className="p-5 border-none shadow-sm rounded-2xl bg-white dark:bg-zinc-900">
+            <span className="text-[10px] text-primary font-bold uppercase tracking-wider">Top Story</span>
+            <h3 className="font-bold text-lg mt-1">Material Design 4.0 Interface Released</h3>
+            <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+              Google announces the latest iteration of its design language, focusing on adaptive colors and fluid motion...
+            </p>
+          </Card>
+        ))}
       </div>
     </div>
   )
 };
 export const BrowserApp: React.FC = () => {
-  const [url, setUrl] = useState('droid://home');
+  const [url, setUrl] = useState('android://home');
   const [currentPage, setCurrentPage] = useState('home');
+  const t = useOSStore((s) => s.t);
   const navigate = (to: string) => {
     setCurrentPage(to);
-    setUrl(`droid://${to}`);
+    setUrl(`android://${to}`);
   };
   return (
-    <div className="h-full flex flex-col bg-black">
-      {/* Address Bar UI */}
-      <div className="h-14 border-b border-current/30 flex items-center px-4 gap-4 bg-current/5 shrink-0">
-        <div className="flex gap-2">
-          <button onClick={() => navigate('home')} className="p-1 hover:bg-current/20 rounded"><ChevronLeft size={18} /></button>
-          <button className="p-1 opacity-20"><ChevronRight size={18} /></button>
-          <button className="p-1 hover:bg-current/20 rounded"><RotateCcw size={18} /></button>
+    <div className="h-full flex flex-col bg-zinc-50 dark:bg-zinc-950 overflow-hidden">
+      {/* Search Bar UI */}
+      <div className="bg-white dark:bg-zinc-900 border-b dark:border-zinc-800 p-3 flex items-center gap-3 shrink-0">
+        <div className="flex gap-1">
+          <button onClick={() => navigate('home')} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full"><ChevronLeft size={20} /></button>
+          <button className="p-2 opacity-30"><ChevronRight size={20} /></button>
         </div>
-        <div className="flex-1 bg-black border border-current/40 px-3 py-1.5 flex items-center gap-2 text-xs">
-          <Globe size={12} className="opacity-50" />
-          <span className="font-bold tracking-tighter opacity-80 uppercase">{url}</span>
+        <div className="flex-1 bg-zinc-100 dark:bg-zinc-800 rounded-full h-10 px-4 flex items-center gap-2 text-sm">
+          <Lock size={14} className="text-green-500" />
+          <span className="text-muted-foreground truncate flex-1">{url}</span>
+          <button onClick={() => navigate(currentPage === 'home' ? 'news' : 'home')}><RotateCcw size={16} className="text-muted-foreground" /></button>
         </div>
-        <button onClick={() => navigate('home')} className="p-1 hover:bg-current/20 rounded"><Home size={18} /></button>
+        <button onClick={() => navigate('home')} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full"><Home size={20} /></button>
       </div>
       {/* Viewport */}
       <div className="flex-1 overflow-y-auto">
-        {MOCK_PAGES[currentPage] || (
-          <div className="h-full flex flex-col items-center justify-center p-12 text-center">
-            <ExternalLink size={48} className="mb-4 text-red-500" />
-            <h2 className="text-xl font-bold text-red-500 uppercase">404: PROTOCOL_NOT_FOUND</h2>
-            <p className="text-xs opacity-50 mt-2 uppercase">The requested neural node does not exist or has been purged by the system janitor.</p>
-            <button onClick={() => navigate('home')} className="mt-6 border border-current px-4 py-2 text-xs uppercase hover:bg-current/10">Return Home</button>
-          </div>
-        )}
+        {MOCK_PAGES[currentPage]}
       </div>
-      {/* Status */}
-      <div className="h-6 border-t border-current/20 flex items-center px-4 text-[8px] uppercase tracking-widest opacity-30">
-        Secure Handshake: Established (TLS 9.0) // Latency: 4ms
+      {/* Footer */}
+      <div className="h-8 bg-white dark:bg-zinc-900 border-t dark:border-zinc-800 flex items-center px-4 justify-between">
+        <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">Chrome Lite v15.4</span>
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 rounded-full bg-green-500" />
+          <span className="text-[9px] text-muted-foreground">Secure Connection</span>
+        </div>
       </div>
     </div>
   );
