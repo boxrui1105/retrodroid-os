@@ -4,6 +4,7 @@ import { Battery, Wifi, SignalHigh } from 'lucide-react';
 import { useOSStore } from '@/store/os-store';
 export const StatusBar: React.FC = () => {
   const systemTime = useOSStore((s) => s.systemTime);
+  const language = useOSStore((s) => s.settings.language);
   const t = useOSStore((s) => s.t);
   return (
     <div className="h-7 px-5 flex items-center justify-between text-[11px] font-medium bg-transparent z-50">

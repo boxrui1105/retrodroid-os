@@ -16,6 +16,7 @@ export const SystemShell: React.FC = () => {
   const updateTime = useOSStore((s) => s.updateTime);
   const initializeOS = useOSStore((s) => s.initializeOS);
   const accentColor = useOSStore((s) => s.settings.accentColor);
+  const language = useOSStore((s) => s.settings.language);
   useEffect(() => {
     initializeOS();
     const timer = setInterval(() => updateTime(), 1000);
@@ -23,8 +24,8 @@ export const SystemShell: React.FC = () => {
   }, [updateTime, initializeOS]);
   return (
     <div
-      className="relative h-screen w-screen bg-[#f8f9fa] dark:bg-[#0d0d0d] overflow-hidden flex flex-col font-sans transition-colors duration-500"
-      style={{ '--android-primary': accentColor } as React.CSSProperties}
+      className="relative h-[100dvh] w-screen bg-[#f8f9fa] dark:bg-[#0d0d0d] overflow-hidden flex flex-col font-sans transition-colors duration-500"
+      style={{ '--android-primary': accentColor, '--primary': accentColor } as React.CSSProperties}
     >
       <AnimatePresence mode="wait">
         {isBooting ? (

@@ -44,7 +44,7 @@ interface OSState {
   initializeOS: () => Promise<void>;
   // Notes Actions
   addNote: (note: Omit<Note, 'id' | 'updatedAt'>) => void;
-  updateNote: (id: string, content: string) => void;
+  updateNote: (id: string, updates: Partial<Note>) => void;
   deleteNote: (id: string) => void;
   // Settings Actions
   updateSettings: (settings: Partial<SystemSettings>) => void;
@@ -69,6 +69,7 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     'notes.sidebar': 'All Notes',
     'notes.new': 'New Note',
     'notes.empty': 'No note selected',
+    'notes.placeholder': 'Start typing your note...',
     'browser.home': 'Home',
     'browser.search': 'Search or type URL',
     'device.model': 'Model',
@@ -85,24 +86,25 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     'app.browser': '浏览器',
     'app.settings': '设置',
     'status.carrier': '安卓系统',
-    'lock.swipe': '上��解锁',
+    'lock.swipe': '上滑���锁',
     'nav.recents': '多任务管理',
-    'nav.clear': '���部清除',
+    'nav.clear': '全部���除',
     'nav.empty': '无最近活动',
-    'settings.visual': '��示设置',
+    'settings.visual': '显示设置',
     'settings.darkmode': '深色模式',
-    'settings.language': '系统��言',
-    'settings.accent': '强调色',
+    'settings.language': '系统语言',
+    'settings.accent': '���调色',
     'settings.info': '设备信息',
     'notes.sidebar': '全部便签',
     'notes.new': '新建便签',
-    'notes.empty': '未选择便签',
+    'notes.empty': '未选���便签',
+    'notes.placeholder': '开始输入便签内��...',
     'browser.home': '主页',
     'browser.search': '搜索或输入网址',
     'device.model': '型号',
     'device.version': '安卓版本',
     'device.processor': '处理器',
-    'device.ram': '���存',
+    'device.ram': '内存',
     'device.storage': '存储空间',
     'device.sim': '模拟模式'
   }
@@ -155,7 +157,7 @@ export const useOSStore = create<OSState>((set, get) => ({
   },
   t: (key) => {
     const lang = get().settings.language;
-    return TRANSLATIONS[lang][key] || key;
+    return TRANSLATIONS[lang]?.[key] || key;
   },
   initializeOS: async () => {
     set({ isSyncing: true });
@@ -164,8 +166,12 @@ export const useOSStore = create<OSState>((set, get) => ({
       const json = await res.json();
       if (json.success && json.data) {
         const { settings, notes } = json.data;
-        if (settings) set((state) => ({ settings: { ...state.settings, ...settings } }));
-        if (notes) set({ notes });
+        if (settings) {
+          set((state) => ({ settings: { ...state.settings, ...settings } }));
+        }
+        if (notes && Array.isArray(notes)) {
+          set({ notes });
+        }
       }
     } catch (e) {
       console.error('Initial OS sync failed:', e);
@@ -192,16 +198,23 @@ export const useOSStore = create<OSState>((set, get) => ({
   addTerminalLine: (line) => set((state) => ({ terminalHistory: [...state.terminalHistory, line] })),
   clearTerminal: () => set({ terminalHistory: [] }),
   addNote: (note) => {
+    const newNote: Note = {
+      id: crypto.randomUUID(),
+      title: note.title,
+      content: note.content,
+      updatedAt: Date.now()
+    };
     set((state) => {
-      const newNote = { id: crypto.randomUUID(), ...note, updatedAt: Date.now() };
       const updatedNotes = [newNote, ...state.notes];
       syncNotes(updatedNotes);
       return { notes: updatedNotes };
     });
   },
-  updateNote: (id, content) => {
+  updateNote: (id, updates) => {
     set((state) => {
-      const updatedNotes = state.notes.map(n => n.id === id ? { ...n, content, updatedAt: Date.now() } : n);
+      const updatedNotes = state.notes.map(n => 
+        n.id === id ? { ...n, ...updates, updatedAt: Date.now() } : n
+      );
       syncNotes(updatedNotes);
       return { notes: updatedNotes };
     });

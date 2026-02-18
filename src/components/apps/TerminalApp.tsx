@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useOSStore } from '@/store/os-store';
+import { cn } from '@/lib/utils';
 export const TerminalApp: React.FC = () => {
   const history = useOSStore((s) => s.terminalHistory);
   const addLine = useOSStore((s) => s.addTerminalLine);
   const clearHistory = useOSStore((s) => s.clearTerminal);
+  const accentColor = useOSStore((s) => s.settings.accentColor);
+  const language = useOSStore((s) => s.settings.language);
   const [input, setInput] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -46,7 +49,7 @@ export const TerminalApp: React.FC = () => {
   };
   return (
     <div className="h-full bg-zinc-950 flex flex-col p-4 font-mono text-sm text-zinc-300">
-      <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-1 scrollbar-thin">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-1">
         {history.map((line, i) => (
           <div key={i} className="whitespace-pre-wrap break-all leading-relaxed">
             {line}
@@ -54,7 +57,7 @@ export const TerminalApp: React.FC = () => {
         ))}
       </div>
       <form onSubmit={handleSubmit} className="mt-4 flex gap-2 items-center border-t border-zinc-800 pt-3">
-        <span className="text-[#34a853] font-bold whitespace-nowrap">user@android:~$</span>
+        <span style={{ color: accentColor }} className="font-bold whitespace-nowrap">user@android:~$</span>
         <input
           autoFocus
           value={input}

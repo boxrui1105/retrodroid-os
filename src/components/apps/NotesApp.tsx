@@ -9,12 +9,13 @@ export const NotesApp: React.FC = () => {
   const addNote = useOSStore((s) => s.addNote);
   const updateNote = useOSStore((s) => s.updateNote);
   const deleteNote = useOSStore((s) => s.deleteNote);
+  const language = useOSStore((s) => s.settings.language);
   const t = useOSStore((s) => s.t);
   const [selectedId, setSelectedId] = useState<string | null>(notes[0]?.id || null);
   const activeNote = notes.find(n => n.id === selectedId);
   const handleCreate = () => {
-    const newNote = { title: 'New Note ' + (notes.length + 1), content: '' };
-    addNote(newNote);
+    const newTitle = t('notes.new') + ' ' + (notes.length + 1);
+    addNote({ title: newTitle, content: '' });
   };
   return (
     <div className="h-full flex flex-col md:flex-row bg-zinc-50 dark:bg-zinc-950">
@@ -34,23 +35,29 @@ export const NotesApp: React.FC = () => {
           </Button>
         </div>
         <div className="flex-1 overflow-y-auto p-2 space-y-1">
-          {notes.map((note) => (
-            <button
-              key={note.id}
-              onClick={() => setSelectedId(note.id)}
-              className={cn(
-                "w-full p-4 flex flex-col gap-1 text-left rounded-2xl transition-all",
-                selectedId === note.id 
-                  ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shadow-sm' 
-                  : 'hover:bg-zinc-100 dark:hover:bg-zinc-800'
-              )}
-            >
-              <span className="font-semibold truncate">{note.title}</span>
-              <span className="text-[11px] opacity-60 font-medium">
-                {format(note.updatedAt, 'MMM d, HH:mm')}
-              </span>
-            </button>
-          ))}
+          {notes.length === 0 ? (
+            <div className="p-10 text-center text-muted-foreground text-sm italic">
+              {t('notes.empty')}
+            </div>
+          ) : (
+            notes.map((note) => (
+              <button
+                key={note.id}
+                onClick={() => setSelectedId(note.id)}
+                className={cn(
+                  "w-full p-4 flex flex-col gap-1 text-left rounded-2xl transition-all",
+                  selectedId === note.id
+                    ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shadow-sm'
+                    : 'hover:bg-zinc-100 dark:hover:bg-zinc-800'
+                )}
+              >
+                <span className="font-semibold truncate">{note.title || 'Untitled'}</span>
+                <span className="text-[11px] opacity-60 font-medium">
+                  {format(note.updatedAt, 'MMM d, HH:mm')}
+                </span>
+              </button>
+            ))
+          )}
         </div>
       </div>
       {/* Editor Area */}
@@ -61,17 +68,15 @@ export const NotesApp: React.FC = () => {
         {activeNote ? (
           <>
             <div className="p-4 border-b dark:border-zinc-800 flex justify-between items-center bg-white dark:bg-zinc-900 md:bg-transparent">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-1">
                 <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSelectedId(null)}>
                   <ChevronLeft size={20} />
                 </Button>
                 <input
                   value={activeNote.title}
-                  onChange={(e) => {
-                    const updated = notes.map(n => n.id === activeNote.id ? {...n, title: e.target.value} : n);
-                    // Internal logic would need updateNote to handle title, simplified here for focus
-                  }}
-                  className="bg-transparent border-none outline-none font-bold text-lg"
+                  onChange={(e) => updateNote(activeNote.id, { title: e.target.value })}
+                  className="bg-transparent border-none outline-none font-bold text-lg w-full focus:ring-0"
+                  placeholder="Note title..."
                 />
               </div>
               <Button
@@ -88,9 +93,9 @@ export const NotesApp: React.FC = () => {
             </div>
             <textarea
               value={activeNote.content}
-              onChange={(e) => updateNote(activeNote.id, e.target.value)}
+              onChange={(e) => updateNote(activeNote.id, { content: e.target.value })}
               className="flex-1 p-8 bg-transparent outline-none resize-none text-base leading-relaxed text-foreground placeholder:opacity-30"
-              placeholder="Start typing your note..."
+              placeholder={t('notes.placeholder')}
             />
           </>
         ) : (

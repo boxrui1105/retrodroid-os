@@ -12,6 +12,8 @@ export const RecentsScreen: React.FC = () => {
   const clearRecents = useOSStore((s) => s.clearRecents);
   const t = useOSStore((s) => s.t);
   const isDarkMode = useOSStore((s) => s.settings.isDarkMode);
+  const language = useOSStore((s) => s.settings.language);
+  const accentColor = useOSStore((s) => s.settings.accentColor);
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -64,7 +66,10 @@ export const RecentsScreen: React.FC = () => {
                   isDarkMode ? "bg-zinc-900 border-zinc-800 hover:bg-zinc-800" : "bg-white border-zinc-200 hover:bg-zinc-50"
                 )}
               >
-                <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-primary/10 text-primary shadow-inner">
+                <div 
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-inner"
+                  style={{ backgroundColor: `${accentColor}15`, color: accentColor }}
+                >
                   <Icon size={32} />
                 </div>
                 <div className="text-left flex-1">

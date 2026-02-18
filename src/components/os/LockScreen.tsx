@@ -6,6 +6,7 @@ import { useOSStore } from '@/store/os-store';
 export const LockScreen: React.FC = () => {
   const systemTime = useOSStore((s) => s.systemTime);
   const setLocked = useOSStore((s) => s.setLocked);
+  const language = useOSStore((s) => s.settings.language);
   const t = useOSStore((s) => s.t);
   const [isUnlocking, setIsUnlocking] = useState(false);
   const y = useMotionValue(0);

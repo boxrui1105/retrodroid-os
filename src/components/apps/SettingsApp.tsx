@@ -9,6 +9,8 @@ export const SettingsApp: React.FC = () => {
   const settings = useOSStore((s) => s.settings);
   const updateSettings = useOSStore((s) => s.updateSettings);
   const t = useOSStore((s) => s.t);
+  const currentLanguage = useOSStore((s) => s.settings.language);
+  const currentAccent = useOSStore((s) => s.settings.accentColor);
   const colors = [
     { name: 'Blue', value: '#1a73e8' },
     { name: 'Green', value: '#34a853' },
@@ -17,7 +19,7 @@ export const SettingsApp: React.FC = () => {
     { name: 'Purple', value: '#a855f7' },
   ];
   return (
-    <div className="h-full bg-zinc-50 dark:bg-zinc-950 p-6 space-y-6 overflow-y-auto">
+    <div className="h-full bg-zinc-50 dark:bg-zinc-950 p-6 space-y-6 overflow-y-auto pb-12">
       <section className="space-y-3">
         <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
           <Monitor size={14} /> {t('settings.visual')}
@@ -40,12 +42,28 @@ export const SettingsApp: React.FC = () => {
         <Card className="p-4 border-none shadow-sm bg-white dark:bg-zinc-900 rounded-2xl">
           <ToggleGroup
             type="single"
-            value={settings.language}
+            value={currentLanguage}
             onValueChange={(val) => val && updateSettings({ language: val as 'en' | 'zh' })}
             className="justify-start gap-4"
           >
-            <ToggleGroupItem value="en" className="px-6 rounded-full border">English</ToggleGroupItem>
-            <ToggleGroupItem value="zh" className="px-6 rounded-full border">中文</ToggleGroupItem>
+            <ToggleGroupItem 
+              value="en" 
+              className={cn(
+                "px-6 rounded-full border transition-all",
+                currentLanguage === 'en' && "bg-primary text-primary-foreground border-primary"
+              )}
+            >
+              English
+            </ToggleGroupItem>
+            <ToggleGroupItem 
+              value="zh" 
+              className={cn(
+                "px-6 rounded-full border transition-all",
+                currentLanguage === 'zh' && "bg-primary text-primary-foreground border-primary"
+              )}
+            >
+              中文
+            </ToggleGroupItem>
           </ToggleGroup>
         </Card>
       </section>
@@ -61,11 +79,11 @@ export const SettingsApp: React.FC = () => {
                 onClick={() => updateSettings({ accentColor: color.value })}
                 className={cn(
                   "w-12 h-12 rounded-full transition-all flex items-center justify-center shadow-inner",
-                  settings.accentColor === color.value ? "ring-2 ring-offset-2 ring-primary scale-110" : "hover:scale-105"
+                  currentAccent === color.value ? "ring-2 ring-offset-2 ring-primary scale-110" : "hover:scale-105"
                 )}
                 style={{ backgroundColor: color.value }}
               >
-                {settings.accentColor === color.value && <Check size={20} className="text-white" />}
+                {currentAccent === color.value && <Check size={20} className="text-white" />}
               </button>
             ))}
           </div>

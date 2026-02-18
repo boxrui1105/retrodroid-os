@@ -5,6 +5,8 @@ import * as LucideIcons from 'lucide-react';
 export const Launcher: React.FC = () => {
   const apps = useOSStore((s) => s.installedApps);
   const setActiveApp = useOSStore((s) => s.setActiveApp);
+  const language = useOSStore((s) => s.settings.language);
+  const accentColor = useOSStore((s) => s.settings.accentColor);
   const t = useOSStore((s) => s.t);
   const container = {
     hidden: { opacity: 0 },
@@ -35,8 +37,10 @@ export const Launcher: React.FC = () => {
               onClick={() => setActiveApp(app.id)}
               className="flex flex-col items-center gap-2 group outline-none"
             >
-              <div className="w-16 h-16 bg-white dark:bg-zinc-800 rounded-3xl flex items-center justify-center shadow-md border border-black/5 group-active:brightness-90 transition-all overflow-hidden">
-                <div className="text-android-blue">
+              <div 
+                className="w-16 h-16 bg-white dark:bg-zinc-800 rounded-3xl flex items-center justify-center shadow-md border border-black/5 group-active:brightness-90 transition-all overflow-hidden"
+              >
+                <div style={{ color: accentColor }}>
                   <Icon size={32} strokeWidth={2} />
                 </div>
               </div>
