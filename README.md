@@ -1,6 +1,6 @@
 # Cloudflare Workers React Starter
 
-[cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/boxrui1105/retrodroid-os)
 
 A production-ready fullstack starter template featuring Cloudflare Workers (with Durable Objects), React, Vite, Tailwind CSS, shadcn/ui, TanStack Query, and Hono. Perfect for building fast, scalable web applications with edge deployment.
 
@@ -97,7 +97,7 @@ Or manually:
 1. Build assets: `bun run build`
 2. Deploy: `wrangler deploy`
 
-[cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/boxrui1105/retrodroid-os)
 
 ### Production Notes
 
